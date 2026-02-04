@@ -1,7 +1,6 @@
 
 using edocle.tools;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace edocle.core
 {
