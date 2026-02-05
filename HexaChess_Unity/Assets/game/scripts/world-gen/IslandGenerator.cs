@@ -23,42 +23,13 @@ namespace hexaChess.worldGen
 
         [SerializeField] private Transform m_GroundContent;
 
-        #region Debug
-        [Space(4)]
-        [SerializeField] private TextMeshProUGUI m_IslandGenerationParameterText;
-        [SerializeField] private TextMeshProUGUI m_IslandGenerationTimerText;
-        [SerializeField] private TextMeshProUGUI m_ReliefGenerationTimerText;
-
-        private DateTime m_IslandGenerationStartDate;
-        bool m_IslandGenerationInProgress = false;
-        private DateTime m_ReliefGenerationStartDate;
-        bool m_ReliefGenerationInProgress = false;
-
-        void UpdateDebug()
-        {
-            if (m_IslandGenerationInProgress)
-            {
-                TimeSpan span = DateTime.Now - m_IslandGenerationStartDate;
-                m_IslandGenerationTimerText.text = $"{span.Seconds.ToString("00")}:{((int)((float)(span.Milliseconds)/10f)).ToString("00")}";
-            }
-            if (m_ReliefGenerationInProgress)
-            {
-                TimeSpan span = DateTime.Now - m_ReliefGenerationStartDate;
-                m_ReliefGenerationTimerText.text = $"{span.Seconds.ToString("00")}:{((int)((float)(span.Milliseconds) / 10f)).ToString("00")}";
-            }
-        }
-
-        #endregion Debug
-
         private IslandTerrain m_IslandTerrain;
 
         public void SetupActiveParameter(string activeParameterId)
         {
             m_ActiveParameterId = activeParameterId;
-            m_IslandGenerationParameterText.text = activeParameterId;
 
-            m_IslandGenerationTimerText.text = "00:00";
-            m_ReliefGenerationTimerText.text = "00:00";
+            TryDebugIsland();
         }
 
         public void GenerateTerrain()
@@ -152,6 +123,45 @@ namespace hexaChess.worldGen
         }
 
         #endregion Generate height
+
+
+        #region Debug
+        [Space(4)]
+        [SerializeField] private TextMeshProUGUI m_IslandGenerationParameterText;
+        [SerializeField] private TextMeshProUGUI m_IslandGenerationTimerText;
+        [SerializeField] private TextMeshProUGUI m_ReliefGenerationTimerText;
+
+        private DateTime m_IslandGenerationStartDate;
+        bool m_IslandGenerationInProgress = false;
+        private DateTime m_ReliefGenerationStartDate;
+        bool m_ReliefGenerationInProgress = false;
+
+        void UpdateDebug()
+        {
+            if (m_IslandGenerationInProgress && m_IslandGenerationTimerText != null)
+            {
+                TimeSpan span = DateTime.Now - m_IslandGenerationStartDate;
+                m_IslandGenerationTimerText.text = $"{span.Seconds.ToString("00")}:{((int)((float)(span.Milliseconds) / 10f)).ToString("00")}";
+            }
+            if (m_ReliefGenerationInProgress && m_IslandGenerationTimerText != null)
+            {
+                TimeSpan span = DateTime.Now - m_ReliefGenerationStartDate;
+                m_ReliefGenerationTimerText.text = $"{span.Seconds.ToString("00")}:{((int)((float)(span.Milliseconds) / 10f)).ToString("00")}";
+            }
+        }
+
+        void TryDebugIsland()
+        {
+            if (m_IslandGenerationParameterText != null)
+                m_IslandGenerationParameterText.text = m_ActiveParameterId;
+
+            if (m_IslandGenerationParameterText != null)
+                m_IslandGenerationTimerText.text = "00:00";
+            if (m_IslandGenerationParameterText != null)
+                m_ReliefGenerationTimerText.text = "00:00";
+        }
+
+        #endregion Debug
     }
 
     [System.Serializable]

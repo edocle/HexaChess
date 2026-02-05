@@ -9,18 +9,21 @@ namespace hexaChess.worldGen
     {
         private MeshRenderer m_MeshRenderer = null;
         private MeshFilter m_MeshFilter = null;
+        private MeshCollider m_MeshCollider = null;
 
         public Chunk m_Chunk { get; private set; }
 
         public void Init(Material material, Chunk tileBatch)
         {
             m_Chunk = tileBatch;
+            Mesh mesh = new Mesh();
             // Setup components
             m_MeshRenderer = gameObject.AddComponent<MeshRenderer>();
-            m_MeshFilter = gameObject.AddComponent<MeshFilter>();
-            Mesh mesh = new Mesh();
-            m_MeshFilter.mesh = mesh;
             m_MeshRenderer.material = material;
+            m_MeshFilter = gameObject.AddComponent<MeshFilter>();
+            m_MeshFilter.mesh = mesh;
+            m_MeshCollider = gameObject.AddComponent<MeshCollider>();
+            m_MeshCollider.sharedMesh = mesh;
         }
 
         public void RefreshMesh()
@@ -51,6 +54,7 @@ namespace hexaChess.worldGen
             m_MeshFilter.mesh.triangles = accumulatedTriangles.ToArray();
 
             m_MeshFilter.mesh.RecalculateNormals();
+            m_MeshCollider.sharedMesh = m_MeshFilter.mesh;
 
 #if DEBUG_TILE_BATCH_GAMEOBJECT
             Debug.Log($"<color=blue>IslandGenerator></color> Generated batch mesh with {accumulatedPolygonPoints.Count} vertices and {accumulatedTriangles.Count / 3} triangles");

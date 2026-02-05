@@ -156,5 +156,37 @@ namespace hexaChess.worldGen
         }
 
         #endregion Neighbours
+
+        public Tile GetTargetedTile(Vector2 position)
+        {
+            // Safeguard
+            if (m_Tiles == null || m_Tiles.Length == 0)
+                return null;
+
+            Tile best = null;
+            float bestSqrDist = float.MaxValue;
+
+            // Run all tiles to pick the closest
+            foreach (var tile in m_Tiles)
+            {
+                if (tile == null)
+                    continue;
+
+                float sqrDist = (tile.m_WorldPos - position).sqrMagnitude;
+
+                if (sqrDist < bestSqrDist)
+                {
+                    bestSqrDist = sqrDist;
+                    best = tile;
+                }
+            }
+
+            if (best == null)
+                Debug.Log($"Error: could not find tile {position.x} {position.y} (tiles: {string.Join(", ", m_Tiles.Select(f => $"{f.m_CoordX} {f.m_CoordY}"))}");
+            else
+                Debug.Log($"Found it! {best.m_CoordX} {best.m_CoordY}");
+
+            return best;
+        }
     }
 }

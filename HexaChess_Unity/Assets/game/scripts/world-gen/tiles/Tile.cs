@@ -218,6 +218,11 @@ namespace hexaChess.worldGen
             }
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         #endregion Operators
     }
 }

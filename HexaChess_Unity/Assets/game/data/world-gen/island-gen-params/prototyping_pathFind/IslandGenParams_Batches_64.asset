@@ -10,28 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 623c39b3644422c4c8b90fee8994808b, type: 3}
-  m_Name: IslandGenParams_Tiles_Basic_8
+  m_Name: IslandGenParams_Batches_64
   m_EditorClassIdentifier: 
-  m_MapRadius: 8
-  m_GeneratorMode: 0
+  m_MapRadius: 64
+  m_GeneratorMode: 3
   m_TileRadius: 1
-  m_Tile: {fileID: 5185450536810835932, guid: ad4f73590ff02c444a993b41cda9f93b, type: 3}
+  m_Tile: {fileID: 5185450536810835932, guid: b03230a0e2f950745ac3d4d5eefc186c, type: 3}
   m_TileNeedMesh: 0
   m_GeneratedTilesPerFrame: 100
-  m_TopographedTilesPerFrame: 100
+  m_ReliefedTilesPerFrame: 100
   m_LinkedTilesPerFrame: 1000
-  m_BigObjectMultipleMeshRadius: 8
+  m_BigObjectMultipleMeshRadius: 5
   m_GeneratedTileContainersPerFrame: 100
   m_TopographedTileContainersPerFrame: 100
   m_TileBatchRadius: 8
-  m_GeneratedBatchesPerFrame: 100
   m_TopographedBatchesPerFrame: 1000
   m_LinkedBatchedTilesPerFrame: 1000
   m_LargePerlinNoiseParameters:
     m_RandomOffsetXRange: 100
     m_RandomOffsetYRange: 100
-    m_Intensity: 1.7
-    m_NoiseRange: 8
+    m_Intensity: 2
+    m_NoiseRange: 24
   m_SmallPerlinNoiseParameters:
     m_RandomOffsetXRange: 100
     m_RandomOffsetYRange: 100
@@ -41,8 +40,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.19805908
-      value: 0.5023804
+      time: 0.20013343
+      value: 0.4844246
       inSlope: 0.0057369536
       outSlope: 0.0057369536
       tangentMode: 0
@@ -51,12 +50,12 @@ MonoBehaviour:
       outWeight: 0.11180239
     - serializedVersion: 3
       time: 0.40014917
-      value: 0.47923863
-      inSlope: -0.07351857
-      outSlope: -0.07351857
+      value: 0.47843373
+      inSlope: -0.1309457
+      outSlope: -0.1309457
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.1069099
       outWeight: 0.14741398
     - serializedVersion: 3
       time: 0.7993164
@@ -74,8 +73,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.19805908
-      value: 0.5023804
+      time: 0.20016098
+      value: 0.48861694
       inSlope: 0.0057369536
       outSlope: 0.0057369536
       tangentMode: 0
@@ -85,12 +84,12 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0.40014917
       value: 0.47923863
-      inSlope: -0.07351857
-      outSlope: -0.07351857
+      inSlope: -0.15971921
+      outSlope: -0.15971921
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.14741398
+      outWeight: 0.0529788
     - serializedVersion: 3
       time: 0.7993164
       value: 0
@@ -107,8 +106,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 0.50014114
+      time: -0.035945892
+      value: 0.26991272
       inSlope: 0.0057369536
       outSlope: 0.0057369536
       tangentMode: 0
@@ -116,32 +115,32 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.11180239
     - serializedVersion: 3
-      time: 0.36324158
-      value: 0.24605331
-      inSlope: -0.13816857
-      outSlope: -0.13816857
+      time: 0.24594483
+      value: 0.24296248
+      inSlope: -0.3456643
+      outSlope: -0.3456643
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.06961774
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.556759
-      value: 0.03690968
-      inSlope: -0.02000066
-      outSlope: -0.02000066
+      time: 0.5134228
+      value: 0.029182622
+      inSlope: -0.21117285
+      outSlope: -0.21117285
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.18541925
-      outWeight: 0.421462
+      outWeight: 0.2406758
     - serializedVersion: 3
-      time: 0.653669
-      value: -0.0006735008
-      inSlope: -0.19110876
-      outSlope: -0.19110876
+      time: 0.6675366
+      value: -0.01070891
+      inSlope: -0.4967345
+      outSlope: -0.4967345
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.2568382
-      outWeight: 0.43956518
+      outWeight: 0.16708486
     - serializedVersion: 3
       time: 0.80073243
       value: -0.20489502
@@ -154,9 +153,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_IslandGlobalReliefIntensity: 10
-  m_BeachMaxHeight: 0.5
-  m_BeachMinHeight: -1
+  m_IslandGlobalReliefIntensity: 20
+  m_BeachMaxHeight: 1
+  m_BeachMinHeight: -2
   m_GrassMaterial: {fileID: 2100000, guid: 394167d87227d6d4396870483a1596bc, type: 2}
   m_BeachMaterial: {fileID: 2100000, guid: 884c4ef10530dac4d942ef24dafd2617, type: 2}
   m_SeaMaterial: {fileID: 2100000, guid: 40e4b733223c0a54c9f26a9927c6dafc, type: 2}
