@@ -15,15 +15,23 @@ namespace hexaChess.worldGen
             UpdateDebug();
         }
 
+        #region Listeners
+
+        public Action OnTerrainGenerated = null;
+        public Action OnReliefGenerated = null;
+
+        #endregion Listeners
+
         #region Generate tiles
 
         [SerializeField] private List<IslandGeneratorParameterId> m_Parameters;
         [SerializeField] private string m_ActiveParameterId;
-        IslandGeneratorParameters ActiveParameter => m_Parameters.Find(f => f.Id == m_ActiveParameterId).Parameter;
+        public IslandGeneratorParameters ActiveParameter => m_Parameters.Find(f => f.Id == m_ActiveParameterId).Parameter;
 
         [SerializeField] private Transform m_GroundContent;
 
         private IslandTerrain m_IslandTerrain;
+        public IslandTerrain Terrain => m_IslandTerrain;
 
         public void SetupActiveParameter(string activeParameterId)
         {
@@ -86,6 +94,7 @@ namespace hexaChess.worldGen
             yield return null;
             m_IslandGenerationInProgress = false;
 
+            OnTerrainGenerated?.Invoke();
             // Initialize Relief
             RefreshIslandRelief();
         }
@@ -113,6 +122,7 @@ namespace hexaChess.worldGen
             yield return StartCoroutine(m_IslandTerrain.RefreshRelief(ActiveParameter, null));
 
             yield return null;
+            OnReliefGenerated?.Invoke();
             m_ReliefGenerationInProgress = false;
         }
 
@@ -123,6 +133,15 @@ namespace hexaChess.worldGen
         }
 
         #endregion Generate height
+
+        #region Calls
+
+        public Tile GetTile(int coordX, int coordY)
+        {
+            return m_IslandTerrain.GetTile(coordX, coordY);
+        }
+
+        #endregion Calls
 
 
         #region Debug

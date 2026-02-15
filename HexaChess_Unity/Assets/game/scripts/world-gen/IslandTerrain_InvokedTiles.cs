@@ -13,11 +13,11 @@ namespace hexaChess.worldGen
         /// <summary>
         /// Physical invoked tiles generated directly on island terrain
         /// </summary>
-        public Dictionary<(int, int), TileGameObject> m_InvokedTiles { get; private set; }
+        public Dictionary<(int, int), TileView> m_InvokedTiles { get; private set; }
 
         public IslandTerrain_InvokedTiles() : base()
         {
-            m_InvokedTiles = new Dictionary<(int, int), TileGameObject>();
+            m_InvokedTiles = new Dictionary<(int, int), TileView>();
         }
 
         #region Generation
@@ -56,7 +56,7 @@ namespace hexaChess.worldGen
 
             if (!m_InvokedTiles.ContainsKey(key))
             {
-                TileGameObject invokedTile = Instantiate(parameters.Tile, transform).GetComponent<TileGameObject>();
+                TileView invokedTile = Instantiate(parameters.Tile, transform).GetComponent<TileView>();
                 invokedTile.Init(tile);
                 m_InvokedTiles.Add(key, invokedTile);
                 return true;
@@ -138,5 +138,11 @@ namespace hexaChess.worldGen
         }
 
         #endregion Relief
+
+
+        public override Tile GetTile(int coordX, int coordY)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace hexaChess.worldGen
 {
-    public class Tile_Mesh : TileGameObject
+    public class Tile_Mesh : TileView
     {
         [SerializeField] MeshFilter m_MeshFilter = null;
 

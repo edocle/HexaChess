@@ -192,15 +192,15 @@ namespace hexaChess.worldGen
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
+            var other = obj as Tile;
+
+            if (other == null)
             {
 #if DEBUG_TILE
             Debug.Log($"[{m_CoordX};{m_CoordY}] false: not same type");
 #endif
                 return false;
             }
-
-            var other = obj as Tile;
 
             if (m_CoordX == other.m_CoordX && m_CoordY == other.m_CoordY)
             {

@@ -31,23 +31,12 @@ namespace edocle.tools
             Ray rayOrigin = Camera.main.ScreenPointToRay( Input.mousePosition );
             if (Physics.Raycast(rayOrigin, out hit))
             {
-                // Debug.Log($"> {hit.collider.gameObject.name} ({hit.point})");
-                m_DrawPoint = true;
-                m_Point = hit.point;
                 OnRaycastHitObject?.Invoke(hit);
             }
         }
 
         public Action<RaycastHit> OnRaycastHitObject = null;
 
-        Vector3 m_Point;
-        bool m_DrawPoint = false;
-
-        private void OnDrawGizmos()
-        {
-            if (m_DrawPoint)
-                Gizmos.DrawSphere(m_Point, 1f);
-        }
     }
 }
 

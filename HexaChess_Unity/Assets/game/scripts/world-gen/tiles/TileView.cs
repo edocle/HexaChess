@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace hexaChess.worldGen
 {
-    public class TileGameObject : MonoBehaviour
+    public class TileView : MonoBehaviour
     {
         public Tile m_Data { get; private set; }
 

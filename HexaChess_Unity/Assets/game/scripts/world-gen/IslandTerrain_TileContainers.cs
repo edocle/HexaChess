@@ -206,6 +206,11 @@ namespace hexaChess.worldGen
             callback?.Invoke();
         }
 
+        public override Tile GetTile(int coordX, int coordY)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion Relief
     }
 }

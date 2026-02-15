@@ -1,4 +1,5 @@
 
+// #define DEBUG_CHUNK
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -181,11 +182,12 @@ namespace hexaChess.worldGen
                 }
             }
 
+#if DEBUG_CHUNK
             if (best == null)
                 Debug.Log($"Error: could not find tile {position.x} {position.y} (tiles: {string.Join(", ", m_Tiles.Select(f => $"{f.m_CoordX} {f.m_CoordY}"))}");
             else
                 Debug.Log($"Found it! {best.m_CoordX} {best.m_CoordY}");
-
+#endif
             return best;
         }
     }

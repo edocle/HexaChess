@@ -208,5 +208,33 @@ public class IslandTerrain_Chunks : IslandTerrain
 #endif
     }
 
-    #endregion Relief
+    public override Tile GetTile(int coordX, int coordY)
+    {
+        if (m_TileChunks == null || m_TileChunks.Length == 0)
+            return null;
+
+        // Tri des chunks par distance (au carré) entre l'origine du chunk et la tile recherchée
+        var orderedChunks = m_TileChunks.OrderBy(chunk =>
+        {
+            int dx = chunk.m_CoordX - coordX;
+            int dy = chunk.m_CoordY - coordY;
+            return dx * dx + dy * dy;
+        });
+    
+        // Recherche dans chaque chunk (du plus proche au plus éloigné)
+        foreach (var chunk in orderedChunks)
+        {
+            foreach (Tile tile in chunk.GetTiles())
+            {
+                if (tile == null)
+                    continue;
+                if (tile.m_CoordPos.x == coordX && tile.m_CoordPos.y == coordY)
+                    return tile;
+            }
+        }
+
+        return null;
+    }
+
+    #endregion Calls
 }

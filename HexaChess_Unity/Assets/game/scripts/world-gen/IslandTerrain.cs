@@ -51,5 +51,11 @@ namespace hexaChess.worldGen
         }
 
         #endregion Relief
+
+        #region Callback
+
+        public abstract Tile GetTile(int coordX, int coordY);
+
+        #endregion Callback
     }
 }
