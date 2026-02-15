@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f7c756ba09c4f44d8c6ea67db26aecd, type: 3}
+  m_Name: MeshGenData_cube
+  m_EditorClassIdentifier: 
+  m_Vertices:
+  - {x: -0.5, y: 0.5, z: -0.5}
+  - {x: 0.5, y: 0.5, z: -0.5}
+  - {x: 0.5, y: -0.5, z: -0.5}
+  - {x: -0.5, y: -0.5, z: -0.5}
+  - {x: -0.5, y: 0.5, z: 0.5}
+  - {x: 0.5, y: 0.5, z: 0.5}
+  - {x: 0.5, y: -0.5, z: 0.5}
+  - {x: -0.5, y: -0.5, z: 0.5}
+  m_Surfaces:
+  - m_Name: front
+    m_Vertices: 00000000010000000200000003000000
+    m_Triangles:
+    - name: front_02
+      t1: 0
+      t2: 1
+      t3: 3
+    - name: front_12
+      t1: 3
+      t2: 1
+      t3: 2
+  - m_Name: back
+    m_Vertices: 07000000060000000500000004000000
+    m_Triangles:
+    - name: back_02
+      t1: 7
+      t2: 6
+      t3: 4
+    - name: back_12
+      t1: 4
+      t2: 6
+      t3: 5
+  - m_Name: left
+    m_Vertices: 04000000000000000300000007000000
+    m_Triangles:
+    - name: left_02
+      t1: 4
+      t2: 0
+      t3: 7
+    - name: left_12
+      t1: 7
+      t2: 0
+      t3: 3
+  - m_Name: right
+    m_Vertices: 01000000050000000600000002000000
+    m_Triangles:
+    - name: right_02
+      t1: 1
+      t2: 5
+      t3: 2
+    - name: right_12
+      t1: 2
+      t2: 5
+      t3: 6
+  - m_Name: bottom
+    m_Vertices: 03000000020000000600000007000000
+    m_Triangles:
+    - name: bottom_02
+      t1: 3
+      t2: 2
+      t3: 7
+    - name: bottom_12
+      t1: 7
+      t2: 2
+      t3: 6
+  - m_Name: top
+    m_Vertices: 04000000050000000100000000000000
+    m_Triangles:
+    - name: bottom_02
+      t1: 3
+      t2: 2
+      t3: 7
+    - name: bottom_12
+      t1: 7
+      t2: 2
+      t3: 6
+  m_Triangles: []
