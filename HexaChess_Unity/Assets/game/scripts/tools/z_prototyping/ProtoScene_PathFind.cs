@@ -5,6 +5,7 @@ using hexaChess.worldGen;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace hexaChess.prototyping.pathFind
@@ -29,13 +30,14 @@ namespace hexaChess.prototyping.pathFind
 
             GenerateTerrain();
             SetupPathFindObjects();
+            SetupSlotObjects();
         }
 
         #region Island generation setup
 
         void GenerateTerrain()
         {
-            Debug.Log($"Generate terain");
+            Debug.Log($"Generate terrain");
             m_IslandGenerator.GenerateTerrain();
             // @todo get tiles & chunks data
         }
@@ -51,6 +53,7 @@ namespace hexaChess.prototyping.pathFind
         void OnReliefGenerated()
         {
             ResetDisplayPath();
+            ResetDisplaySlots();
         }
 
         #endregion Island generation setup
@@ -79,6 +82,7 @@ namespace hexaChess.prototyping.pathFind
             LastPath = pathFind.FindPath(m_CurrentUnitTile, tile);
 
             DisplayPath();
+            DisplaySlots();
         }
 
         #region Display path finding
@@ -90,7 +94,7 @@ namespace hexaChess.prototyping.pathFind
         {
             // Target sphere
             m_TargetSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            m_TargetSphere.transform.localScale = Vector3.one;
+            m_TargetSphere.transform.localScale = Vector3.one / 2f;
             m_TargetSphere.transform.SetParent(transform, false);
             m_TargetSphere.transform.localPosition = Vector3.zero;
             var renderer = m_TargetSphere.GetComponent<MeshRenderer>();
@@ -134,5 +138,49 @@ namespace hexaChess.prototyping.pathFind
         #endregion Display path finding
 
         #endregion Path finding
+
+        #region Display slots
+
+
+        GameObject[] m_SlotSpheres = null;
+
+        void SetupSlotObjects()
+        {
+            m_SlotSpheres = new GameObject[3];
+            for (int i = 0; i < 3; i++)
+            {
+                GameObject sphere = null;
+                sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                sphere.transform.localScale = Vector3.one / 2.5f;
+                sphere.transform.SetParent(transform, false);
+                sphere.transform.localPosition = Vector3.zero;
+                var renderer = sphere.GetComponent<MeshRenderer>();
+                renderer.material = m_IslandGenerator.ActiveParameter.BeachMaterial;
+
+                m_SlotSpheres[i] = sphere;
+            }
+        }
+
+        void ResetDisplaySlots()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                m_SlotSpheres[i].transform.localPosition = Vector3.zero;
+            }
+        }
+
+        void DisplaySlots()
+        {
+            Tile lastTile = LastPath.Last();
+            Debug.Log($"> Tile position: {lastTile.m_CoordPos} ({lastTile.WorldPos3D})");
+            for (int i = 0; i < 3; i++)
+            {
+                TileSlot slot = lastTile.SideSlots[i];
+                Debug.Log($"> Tile side position [{i}]: {slot.Position}");
+                m_SlotSpheres[i].transform.localPosition = new Vector3(slot.Position.x, slot.Position.y + 0.1f, slot.Position.z);
+            }
+        }
+
+        #endregion Display slots
     }
 }

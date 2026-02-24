@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace edocle.tools
 {
-    public class Maths
+    public static class Maths
     {
 
         #region Ballistics
@@ -99,5 +99,22 @@ namespace edocle.tools
         }
 
         #endregion Noises
+
+        #region Vectors
+
+        public static Vector2 RotateUsingDegrees(this Vector2 vector, float degrees)
+        {
+            return vector.Rotate(Mathf.Deg2Rad * degrees);
+        }
+
+        public static Vector2 Rotate(this Vector2 vector, float radian)
+        {
+            return new Vector2(
+                vector.x * Mathf.Cos(radian) - vector.y * Mathf.Sin(radian),
+                vector.x * Mathf.Sin(radian) + vector.y * Mathf.Cos(radian)
+            );
+        }
+
+        #endregion Vectors
     }
 }

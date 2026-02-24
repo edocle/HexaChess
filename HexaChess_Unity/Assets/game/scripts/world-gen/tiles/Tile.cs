@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using edocle.tools;
 
 namespace hexaChess.worldGen
 {
@@ -71,7 +72,6 @@ namespace hexaChess.worldGen
         }
 
         #endregion Relief
-
 
         #region Adjacents
 
@@ -224,5 +224,77 @@ namespace hexaChess.worldGen
         }
 
         #endregion Operators
+
+        /// <summary>
+        /// Slots are sockets where we can place objects
+        /// Every slot has a position, so that if we allow an object onto a slot, it knows its position
+        /// We can have up to x side slots (3 to 6, not sure), so an entity can spawn into an empty side slot if there is any
+        /// We can only have one main slot, that takes all the place and prevent any entity to spawn in a side slot
+        /// Micro slots are only here to put additional small entities like grass or other things
+        /// </summary>
+        #region Slots
+
+        void GenerateSlots()
+        {
+            // Main slot
+            m_MainSlot = new TileSlot(WorldPos3D, SlotType.main);
+
+            // Side slots
+            float sideSlotsDistanceToCenter = m_Radius / 3f;
+            Vector2 randomDirection = Random.insideUnitCircle.normalized * sideSlotsDistanceToCenter;
+            m_SideSlots = new TileSlot[3];
+            // of course need to find a way to optimize this code, once we know it works well
+            // side slot 0
+            Vector2 sideSlot0Position = m_WorldPos + randomDirection;
+            Vector3 sideSlot0Position3D = new Vector3(sideSlot0Position.x, m_WorldPosZ, sideSlot0Position.y);
+            m_SideSlots[0] = new TileSlot(sideSlot0Position3D, SlotType.side);
+            Debug.Log($"Slot1> Direction: {randomDirection} /Radius: {sideSlotsDistanceToCenter} /Position: {sideSlot0Position3D}");
+
+            // side slot 1
+            Vector2 sideSlot1Direction = randomDirection.RotateUsingDegrees(120f);
+            Vector2 sideSlot1Position = m_WorldPos + sideSlot1Direction;
+            Vector3 sideSlot1Position3D = new Vector3(sideSlot1Position.x, m_WorldPosZ, sideSlot1Position.y);
+            m_SideSlots[1] = new TileSlot(sideSlot1Position3D, SlotType.side);
+            Debug.Log($"Slot1> Direction: {sideSlot1Direction} /Radius: {sideSlotsDistanceToCenter} /Position: {sideSlot1Position3D}");
+
+            // side slot 2
+            Vector2 sideSlot2Direction = sideSlot1Direction.RotateUsingDegrees(120f);
+            Vector2 sideSlot2Position = m_WorldPos + sideSlot2Direction;
+            Vector3 sideSlot2Position3D = new Vector3(sideSlot2Position.x, m_WorldPosZ, sideSlot2Position.y);
+            m_SideSlots[2] = new TileSlot(sideSlot2Position3D, SlotType.side);
+            Debug.Log($"Slot1> Direction: {sideSlot2Direction} /Radius: {sideSlotsDistanceToCenter} /Position: {sideSlot2Position3D}");
+
+            // for now, ignore micro slots
+        }
+
+        private TileSlot m_MainSlot = null;
+
+        private TileSlot[] m_SideSlots = null;
+
+        // private TileSlot[] m_MicroSlots = null;
+
+        public TileSlot MainSlot
+        {
+            get
+            {
+                if (m_MainSlot == null)
+                    GenerateSlots();
+
+                return m_MainSlot;
+            }
+        }
+
+        public TileSlot[] SideSlots
+        {
+            get
+            {
+                if (m_SideSlots == null)
+                    GenerateSlots();
+
+                return m_SideSlots;
+            }
+        }
+
+        #endregion Slots
     }
 }
