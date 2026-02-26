@@ -234,39 +234,6 @@ namespace hexaChess.worldGen
         /// </summary>
         #region Slots
 
-        void GenerateSlots()
-        {
-            // Main slot
-            m_MainSlot = new TileSlot(WorldPos3D, SlotType.main);
-
-            // Side slots
-            float sideSlotsDistanceToCenter = m_Radius / 3f;
-            Vector2 randomDirection = Random.insideUnitCircle.normalized * sideSlotsDistanceToCenter;
-            m_SideSlots = new TileSlot[3];
-            // of course need to find a way to optimize this code, once we know it works well
-            // side slot 0
-            Vector2 sideSlot0Position = m_WorldPos + randomDirection;
-            Vector3 sideSlot0Position3D = new Vector3(sideSlot0Position.x, m_WorldPosZ, sideSlot0Position.y);
-            m_SideSlots[0] = new TileSlot(sideSlot0Position3D, SlotType.side);
-            Debug.Log($"Slot1> Direction: {randomDirection} /Radius: {sideSlotsDistanceToCenter} /Position: {sideSlot0Position3D}");
-
-            // side slot 1
-            Vector2 sideSlot1Direction = randomDirection.RotateUsingDegrees(120f);
-            Vector2 sideSlot1Position = m_WorldPos + sideSlot1Direction;
-            Vector3 sideSlot1Position3D = new Vector3(sideSlot1Position.x, m_WorldPosZ, sideSlot1Position.y);
-            m_SideSlots[1] = new TileSlot(sideSlot1Position3D, SlotType.side);
-            Debug.Log($"Slot1> Direction: {sideSlot1Direction} /Radius: {sideSlotsDistanceToCenter} /Position: {sideSlot1Position3D}");
-
-            // side slot 2
-            Vector2 sideSlot2Direction = sideSlot1Direction.RotateUsingDegrees(120f);
-            Vector2 sideSlot2Position = m_WorldPos + sideSlot2Direction;
-            Vector3 sideSlot2Position3D = new Vector3(sideSlot2Position.x, m_WorldPosZ, sideSlot2Position.y);
-            m_SideSlots[2] = new TileSlot(sideSlot2Position3D, SlotType.side);
-            Debug.Log($"Slot1> Direction: {sideSlot2Direction} /Radius: {sideSlotsDistanceToCenter} /Position: {sideSlot2Position3D}");
-
-            // for now, ignore micro slots
-        }
-
         private TileSlot m_MainSlot = null;
 
         private TileSlot[] m_SideSlots = null;
@@ -278,10 +245,15 @@ namespace hexaChess.worldGen
             get
             {
                 if (m_MainSlot == null)
-                    GenerateSlots();
+                    GenerateMainSlot();
 
                 return m_MainSlot;
             }
+        }
+
+        void GenerateMainSlot()
+        {
+            m_MainSlot = new TileSlot(WorldPos3D, SlotType.main);
         }
 
         public TileSlot[] SideSlots
@@ -289,10 +261,34 @@ namespace hexaChess.worldGen
             get
             {
                 if (m_SideSlots == null)
-                    GenerateSlots();
+                    GenerateSideSlots();
 
                 return m_SideSlots;
             }
+        }
+
+        void GenerateSideSlots()
+        {
+            int sideSlots = 3;
+            float degreesBetweenEachSide = 360f / sideSlots;
+            float sideSlotsDistanceToCenter = m_Radius / sideSlots;
+            Vector2 newDirection = Random.insideUnitCircle.normalized * sideSlotsDistanceToCenter;
+            m_SideSlots = new TileSlot[sideSlots];
+
+            for (int i = 0; i < sideSlots; i++)
+            {
+                m_SideSlots[i] = GenerateSideSlot(ref newDirection, degreesBetweenEachSide);
+            }
+        }
+
+        TileSlot GenerateSideSlot(ref Vector2 previousDirection, float degrees)
+        {
+            // Everytime, we update previous direction, si that it can turn
+            previousDirection = previousDirection.RotateUsingDegrees(degrees);
+            Vector2 position = m_WorldPos + previousDirection;
+            Vector3 position3D = new Vector3(position.x, m_WorldPosZ, position.y);
+            return new TileSlot(position3D, SlotType.side);
+            // Debug.Log($"New side slot> Direction: {previousDirection} /Position: {position3D}");
         }
 
         #endregion Slots

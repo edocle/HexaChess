@@ -94,7 +94,7 @@ namespace hexaChess.prototyping.pathFind
         {
             // Target sphere
             m_TargetSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            m_TargetSphere.transform.localScale = Vector3.one / 2f;
+            m_TargetSphere.transform.localScale = Vector3.one / 2.5f;
             m_TargetSphere.transform.SetParent(transform, false);
             m_TargetSphere.transform.localPosition = Vector3.zero;
             var renderer = m_TargetSphere.GetComponent<MeshRenderer>();
@@ -151,7 +151,7 @@ namespace hexaChess.prototyping.pathFind
             {
                 GameObject sphere = null;
                 sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                sphere.transform.localScale = Vector3.one / 2.5f;
+                sphere.transform.localScale = Vector3.one / 4f;
                 sphere.transform.SetParent(transform, false);
                 sphere.transform.localPosition = Vector3.zero;
                 var renderer = sphere.GetComponent<MeshRenderer>();
@@ -177,7 +177,7 @@ namespace hexaChess.prototyping.pathFind
             {
                 TileSlot slot = lastTile.SideSlots[i];
                 Debug.Log($"> Tile side position [{i}]: {slot.Position}");
-                m_SlotSpheres[i].transform.localPosition = new Vector3(slot.Position.x, slot.Position.y + 0.1f, slot.Position.z);
+                m_SlotSpheres[i].transform.localPosition = new Vector3(slot.Position.x, slot.Position.y, slot.Position.z);
             }
         }
 
