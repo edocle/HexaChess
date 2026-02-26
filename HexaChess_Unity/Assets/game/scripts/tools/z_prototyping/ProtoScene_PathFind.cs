@@ -31,6 +31,7 @@ namespace hexaChess.prototyping.pathFind
             GenerateTerrain();
             SetupPathFindObjects();
             SetupSlotObjects();
+            SetupTiltObject();
         }
 
         #region Island generation setup
@@ -54,6 +55,7 @@ namespace hexaChess.prototyping.pathFind
         {
             ResetDisplayPath();
             ResetDisplaySlots();
+            ResetDisplayTilt();
         }
 
         #endregion Island generation setup
@@ -83,12 +85,14 @@ namespace hexaChess.prototyping.pathFind
 
             DisplayPath();
             DisplaySlots();
+            DisplayTilt();
         }
 
         #region Display path finding
 
-        LineRenderer m_LineRenderer = null;
+        LineRenderer m_PathLineRenderer = null;
         GameObject m_TargetSphere = null;
+        GameObject m_TargetLineRenderer = null;
 
         void SetupPathFindObjects()
         {
@@ -101,34 +105,38 @@ namespace hexaChess.prototyping.pathFind
             renderer.material = m_IslandGenerator.ActiveParameter.BeachMaterial;
 
             // Line renderer
-            m_LineRenderer = gameObject.AddComponent<LineRenderer>();
+            m_TargetLineRenderer = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            m_TargetLineRenderer.transform.localScale = Vector3.one / 2.5f;
+            m_TargetLineRenderer.transform.SetParent(transform, false);
+            m_TargetLineRenderer.transform.localPosition = Vector3.zero;
+            m_PathLineRenderer = m_TargetLineRenderer.AddComponent<LineRenderer>();
 
             // Set the material
-            m_LineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            m_PathLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
 
             // Set the color
-            m_LineRenderer.startColor = Color.red;
-            m_LineRenderer.endColor = Color.yellow;
+            m_PathLineRenderer.startColor = Color.red;
+            m_PathLineRenderer.endColor = Color.yellow;
 
             // Set the width
-            m_LineRenderer.startWidth = 0.2f;
-            m_LineRenderer.endWidth = 0.2f;
+            m_PathLineRenderer.startWidth = 0.2f;
+            m_PathLineRenderer.endWidth = 0.2f;
         }
 
         void ResetDisplayPath()
         {
             LastPath = null;
-            m_LineRenderer.positionCount = 0;
+            m_PathLineRenderer.positionCount = 0;
             m_TargetSphere.transform.localPosition = Vector3.zero;
         }
 
         void DisplayPath()
         {
-            m_LineRenderer.positionCount = LastPath.Count;
+            m_PathLineRenderer.positionCount = LastPath.Count;
             for (int i = 0; i < LastPath.Count; i++)
             {
                 Tile tileA = LastPath[i];
-                m_LineRenderer.SetPosition(i, new Vector3(tileA.m_CoordPos.x, tileA.m_CoordPosZ + 0.5f, tileA.m_CoordPos.y));
+                m_PathLineRenderer.SetPosition(i, new Vector3(tileA.m_CoordPos.x, tileA.m_CoordPosZ + 0.5f, tileA.m_CoordPos.y));
             }
 
             Tile lastTile = LastPath.Last();
@@ -182,5 +190,46 @@ namespace hexaChess.prototyping.pathFind
         }
 
         #endregion Display slots
+
+        #region Display tilt direction
+
+        LineRenderer m_TiltLineRenderer = null;
+        GameObject m_TiltObjectLineRenderer = null;
+
+        void SetupTiltObject()
+        {
+            // Line renderer
+            m_TiltObjectLineRenderer = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            m_TiltObjectLineRenderer.transform.localScale = Vector3.one / 8f;
+            m_TiltObjectLineRenderer.transform.SetParent(transform, false);
+            m_TiltObjectLineRenderer.transform.localPosition = Vector3.zero;
+            m_TiltLineRenderer = m_TiltObjectLineRenderer.AddComponent<LineRenderer>();
+
+            // Set the material
+            m_TiltLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+
+            // Set the color
+            m_TiltLineRenderer.startColor = Color.red;
+            m_TiltLineRenderer.endColor = Color.yellow;
+
+            // Set the width
+            m_TiltLineRenderer.startWidth = 0.2f;
+            m_TiltLineRenderer.endWidth = 0.2f;
+        }
+
+        void ResetDisplayTilt()
+        {
+            m_TiltLineRenderer.positionCount = 0;
+        }
+
+        void DisplayTilt()
+        {
+            Tile lastTile = LastPath.Last();
+            m_TiltLineRenderer.positionCount = 2;
+            m_TiltLineRenderer.SetPosition(0, lastTile.WorldPos3D);
+            m_TiltLineRenderer.SetPosition(1, lastTile.WorldPos3D + lastTile.TiltDirection);
+        }
+
+        #endregion display tilt direction
     }
 }

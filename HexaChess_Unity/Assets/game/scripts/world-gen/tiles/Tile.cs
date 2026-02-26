@@ -113,9 +113,27 @@ namespace hexaChess.worldGen
 
         #endregion Adjacents
 
-        #region Meshpoints
+        #region Vectors
 
-        public Vector3[] GetPoints(bool includeTilePosition = false, Vector3 offsetPos = new Vector3())
+        Vector3[] m_Edges;
+
+        public Vector3[] Edges
+        {
+            get
+            {
+                if (m_Edges == null)
+                    GenerateEdges();
+
+                return m_Edges;
+            }
+        }
+
+        /// <summary>
+        /// Generate position of tile edges
+        /// I need them to be specifically named, because I want to know the order and direction of each point
+        /// First, need neighbour tiles
+        /// </summary>
+        void GenerateEdges()
         {
             // Identify all adjacents
             // May need to register them for other usages, later
@@ -126,36 +144,92 @@ namespace hexaChess.worldGen
             Tile xBackward_yNeutral = System.Array.Find(m_AdjacentTiles, t => t.m_CoordX == m_CoordX - 1 && t.m_CoordY == m_CoordY);
             Tile xBackward_yForward = System.Array.Find(m_AdjacentTiles, t => t.m_CoordX == m_CoordX - 1 && t.m_CoordY == m_CoordY + 1);
 
-            // if one adjacent tile is null, it's a border tile, no need to compute mesh points
-            if (xForward_yBackward == null ||
-                xForward_yNeutral == null ||
-                xNeutral_yBackward == null ||
-                xNeutral_yForward == null ||
-                xBackward_yNeutral == null ||
-                xBackward_yForward == null)
-                return null;
+            // if one adjacent tile is null, it's a border tile, replacing it with self
+            if (xForward_yBackward == null)
+                xForward_yBackward = this;
+
+            if (xForward_yNeutral == null)
+                xForward_yNeutral = this;
+
+            if (xNeutral_yBackward == null)
+                xNeutral_yBackward = this;
+
+            if (xNeutral_yForward == null)
+                xNeutral_yForward = this;
+
+            if (xBackward_yNeutral == null)
+                xBackward_yNeutral = this;
+
+            if (xBackward_yForward == null)
+                xBackward_yForward = this;
 
             Vector3 worldPos3D = WorldPos3D;
             // Compute vertices
             // points to obtain: center between target tile & 2 adjacent tiles (to triangulate its position)
-            Vector3 localPosition0 = (worldPos3D + xForward_yNeutral.WorldPos3D + xNeutral_yForward.WorldPos3D) / 3 - (includeTilePosition ? new Vector3() : worldPos3D);
-            Vector3 localPosition1 = (worldPos3D + xNeutral_yForward.WorldPos3D + xBackward_yForward.WorldPos3D) / 3 - (includeTilePosition ? new Vector3() : worldPos3D);
-            Vector3 localPosition2 = (worldPos3D + xBackward_yForward.WorldPos3D + xBackward_yNeutral.WorldPos3D) / 3 - (includeTilePosition ? new Vector3() : worldPos3D);
-            Vector3 localPosition3 = (worldPos3D + xBackward_yNeutral.WorldPos3D + xNeutral_yBackward.WorldPos3D) / 3 - (includeTilePosition ? new Vector3() : worldPos3D);
-            Vector3 localPosition4 = (worldPos3D + xNeutral_yBackward.WorldPos3D + xForward_yBackward.WorldPos3D) / 3 - (includeTilePosition ? new Vector3() : worldPos3D);
-            Vector3 localPosition5 = (worldPos3D + xForward_yBackward.WorldPos3D + xForward_yNeutral.WorldPos3D) / 3 - (includeTilePosition ? new Vector3() : worldPos3D);
+            Vector3 localPosition0 = (worldPos3D + xForward_yNeutral.WorldPos3D + xNeutral_yForward.WorldPos3D) / 3;
+            Vector3 localPosition1 = (worldPos3D + xNeutral_yForward.WorldPos3D + xBackward_yForward.WorldPos3D) / 3;
+            Vector3 localPosition2 = (worldPos3D + xBackward_yForward.WorldPos3D + xBackward_yNeutral.WorldPos3D) / 3;
+            Vector3 localPosition3 = (worldPos3D + xBackward_yNeutral.WorldPos3D + xNeutral_yBackward.WorldPos3D) / 3;
+            Vector3 localPosition4 = (worldPos3D + xNeutral_yBackward.WorldPos3D + xForward_yBackward.WorldPos3D) / 3;
+            Vector3 localPosition5 = (worldPos3D + xForward_yBackward.WorldPos3D + xForward_yNeutral.WorldPos3D) / 3;
 
-            Vector3[] vertices = new Vector3[]
+            m_Edges = new Vector3[]
             {
-                localPosition0 + offsetPos,
-                localPosition1 + offsetPos,
-                localPosition2 + offsetPos,
-                localPosition3 + offsetPos,
-                localPosition4 + offsetPos,
-                localPosition5 + offsetPos,
+                (worldPos3D + xForward_yNeutral.WorldPos3D + xNeutral_yForward.WorldPos3D) / 3,
+                (worldPos3D + xNeutral_yForward.WorldPos3D + xBackward_yForward.WorldPos3D) / 3,
+                (worldPos3D + xBackward_yForward.WorldPos3D + xBackward_yNeutral.WorldPos3D) / 3,
+                (worldPos3D + xBackward_yNeutral.WorldPos3D + xNeutral_yBackward.WorldPos3D) / 3,
+                (worldPos3D + xNeutral_yBackward.WorldPos3D + xForward_yBackward.WorldPos3D) / 3,
+                (worldPos3D + xForward_yBackward.WorldPos3D + xForward_yNeutral.WorldPos3D) / 3,
             };
+        }
 
-            return vertices;
+        #region Tilt direction
+
+        private Vector3 m_TiltDirection;
+        bool m_TiltDirectionGenerated = false;
+        public Vector3 TiltDirection
+        {
+            get
+            {
+                if (!m_TiltDirectionGenerated)
+                    GenerateTiltDirection();
+
+                return m_TiltDirection;
+            }
+        }
+
+        void GenerateTiltDirection()
+        {
+            var edges = Edges;
+            var center = WorldPos3D;
+            m_TiltDirectionGenerated = true;
+            // Order here is important, so that the tilt is upward and not backward
+            Vector3 a = (edges[1] - center);
+            Vector3 b = (edges[0] - center);
+            m_TiltDirection = Vector3.Cross(a, b);
+            m_TiltDirection.Normalize();
+        }
+
+        #endregion Tilt direction
+
+        #endregion Vectors
+
+        #region Meshpoints
+
+        public Vector3[] GetPoints(bool includeTilePosition = false, Vector3 offsetPos = new Vector3())
+        {
+            Vector3[] edges = Edges;
+            Vector3 worldPos3D = WorldPos3D;
+            return new Vector3[]
+            {
+                edges[0] - (includeTilePosition ? new Vector3() : worldPos3D) + offsetPos,
+                edges[1] - (includeTilePosition ? new Vector3() : worldPos3D) + offsetPos,
+                edges[2] - (includeTilePosition ? new Vector3() : worldPos3D) + offsetPos,
+                edges[3] - (includeTilePosition ? new Vector3() : worldPos3D) + offsetPos,
+                edges[4] - (includeTilePosition ? new Vector3() : worldPos3D) + offsetPos,
+                edges[5] - (includeTilePosition ? new Vector3() : worldPos3D) + offsetPos,
+            };
         }
 
         public int[] DrawTriangles(Vector3[] points, int offset = 0)
