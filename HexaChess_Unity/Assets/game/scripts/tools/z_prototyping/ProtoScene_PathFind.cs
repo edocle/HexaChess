@@ -29,9 +29,10 @@ namespace hexaChess.prototyping.pathFind
             m_IslandGenerator.OnReliefGenerated += OnReliefGenerated;
 
             GenerateTerrain();
-            SetupPathFindObjects();
+            // SetupPathFindObjects();
             // SetupSlotObjects();
             SetupTiltObject();
+            SetupEdges();
         }
 
         #region Island generation setup
@@ -54,8 +55,9 @@ namespace hexaChess.prototyping.pathFind
         void OnReliefGenerated()
         {
             ResetDisplayPath();
-            // ResetDisplaySlots();
+            ResetDisplaySlots();
             ResetDisplayTilt();
+            ResetEdges();
         }
 
         #endregion Island generation setup
@@ -84,23 +86,29 @@ namespace hexaChess.prototyping.pathFind
             LastPath = pathFind.FindPath(m_CurrentUnitTile, tile);
 
             DisplayPath();
-            // DisplaySlots();
+            DisplaySlots();
             DisplayTilt();
+            DisplayEdges();
         }
 
         #region Display path finding
 
         LineRenderer m_PathLine = null;
         GameObject m_PathSphere = null;
+        bool m_DisplayPath = false;
 
         void SetupPathFindObjects()
         {
+            m_DisplayPath = true;
             m_PathSphere = GenerateSphere("path finding sphere", 0.3f);
             m_PathLine = GenerateLine("path finding line", Color.red, Color.yellow);
         }
 
         void ResetDisplayPath()
         {
+            if (!m_DisplayPath)
+                return;
+
             LastPath = null;
             ResetLine(m_PathLine);
             ResetSphere(m_PathSphere);
@@ -108,6 +116,9 @@ namespace hexaChess.prototyping.pathFind
 
         void DisplayPath()
         {
+            if (!m_DisplayPath)
+                return;
+
             m_PathLine.positionCount = LastPath.Count;
             for (int i = 0; i < LastPath.Count; i++)
             {
@@ -127,9 +138,12 @@ namespace hexaChess.prototyping.pathFind
 
 
         GameObject[] m_SlotSpheres = null;
+        bool m_DisplaySlots = false;
 
         void SetupSlotObjects()
         {
+            m_DisplaySlots = true;
+
             m_SlotSpheres = new GameObject[3];
             for (int i = 0; i < 3; i++)
             {
@@ -140,6 +154,9 @@ namespace hexaChess.prototyping.pathFind
 
         void ResetDisplaySlots()
         {
+            if (!m_DisplaySlots)
+                return;
+
             for (int i = 0; i < 3; i++)
             {
                 m_SlotSpheres[i].transform.localPosition = Vector3.zero;
@@ -148,12 +165,13 @@ namespace hexaChess.prototyping.pathFind
 
         void DisplaySlots()
         {
+            if (!m_DisplaySlots)
+                return;
+
             Tile lastTile = LastPath.Last();
-            Debug.Log($"> Tile position: {lastTile.m_CoordPos} ({lastTile.WorldPos3D})");
             for (int i = 0; i < 3; i++)
             {
                 TileSlot slot = lastTile.SideSlots[i];
-                Debug.Log($"> Tile side position [{i}]: {slot.Position}");
                 m_SlotSpheres[i].transform.localPosition = new Vector3(slot.Position.x, slot.Position.y, slot.Position.z);
             }
         }
@@ -165,35 +183,40 @@ namespace hexaChess.prototyping.pathFind
         LineRenderer m_UpLine = null;
         LineRenderer m_TiltLine = null;
         LineRenderer[] m_SlotsLine = null;
-        LineRenderer[] m_TiltedSlotsLine = null;
+        bool m_DisplayTilt = false;
 
         void SetupTiltObject()
         {
-            m_UpLine = GenerateLine("up line", Color.yellow, Color.yellow);
-            m_TiltLine = GenerateLine("tilt line", Color.blue, Color.yellow);
+            m_DisplayTilt = true;
+
+            m_UpLine = GenerateLine("up line", Color.red, Color.yellow, 0.08f);
+            m_TiltLine = GenerateLine("tilt line", Color.purple, Color.yellow, 0.08f);
             // Slots
             m_SlotsLine = new LineRenderer[3];
-            m_TiltedSlotsLine = new LineRenderer[3];
             for (int i = 0; i < 3; i++)
             {
-                m_SlotsLine[i] = GenerateLine($"slot line {i}", Color.red, Color.red);
-                m_TiltedSlotsLine[i] = GenerateLine($"tilted slot line {i}", Color.purple, Color.purple);
+                m_SlotsLine[i] = GenerateLine($"slot line {i}", Color.purple, Color.purple, 0.03f);
             }
         }
 
         void ResetDisplayTilt()
         {
+            if (!m_DisplayTilt)
+                return;
+
             ResetLine(m_UpLine);
             ResetLine(m_TiltLine);
             for (int i = 0; i < 3; i++)
             {
                 ResetLine(m_SlotsLine[i]);
-                ResetLine(m_TiltedSlotsLine[i]);
             }
         }
 
         void DisplayTilt()
         {
+            if (!m_DisplayTilt)
+                return;
+
             Tile lastTile = LastPath.Last();
             // up
             m_UpLine.positionCount = 2;
@@ -210,24 +233,54 @@ namespace hexaChess.prototyping.pathFind
                 m_SlotsLine[i].positionCount = 2;
                 m_SlotsLine[i].SetPosition(0, lastTile.WorldPos3D);
                 m_SlotsLine[i].SetPosition(1, lastTile.SideSlots[i].Position);
-
-                // attempt at tilt
-                Vector3 slotVector = lastTile.SideSlots[i].Position - lastTile.WorldPos3D;
-                Vector3 upVector = Vector3.up;
-                Vector3 upTiltedVector = lastTile.TiltDirection;
-
-                Vector3 firstCross = Vector3.Cross(slotVector, upVector);
-                Vector3 tiltedVector = Vector3.Cross(-firstCross, upTiltedVector);
-
-                m_TiltedSlotsLine[i].positionCount = 2;
-                m_TiltedSlotsLine[i].SetPosition(0, lastTile.WorldPos3D);
-                m_TiltedSlotsLine[i].SetPosition(1, lastTile.WorldPos3D + tiltedVector);
             }
         }
 
         #endregion display tilt direction
 
-        LineRenderer GenerateLine(string name, Color startColor, Color endColor)
+        #region display edges
+
+        GameObject[] m_EdgeSpheres = null;
+        bool m_DisplayEdges = false;
+
+        void SetupEdges()
+        {
+            m_DisplayEdges = true;
+            m_EdgeSpheres = new GameObject[6];
+
+            for (int i = 0; i < 6; i++)
+            {
+                m_EdgeSpheres[i] = GenerateSphere($"edge {i}", 0.1f * i);
+            }
+        }
+
+        void ResetEdges()
+        {
+            if (!m_DisplayEdges)
+                return;
+
+            for (int i = 0; i < 6; i++)
+            {
+                ResetSphere(m_EdgeSpheres[i]);
+            }
+        }
+
+        void DisplayEdges()
+        {
+            if (!m_DisplayEdges)
+                return;
+
+            Tile lastTile = LastPath.Last();
+            var edges = lastTile.Edges;
+            for (int i = 0; i < 6; i++)
+            {
+                m_EdgeSpheres[i].transform.localPosition = edges[i];
+            }
+        }
+
+        #endregion display edges
+
+        LineRenderer GenerateLine(string name, Color startColor, Color endColor, float thick = 0.1f)
         {
             // setup game object
             var gameObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -245,8 +298,8 @@ namespace hexaChess.prototyping.pathFind
             renderer.endColor = endColor;
 
             // Set the width
-            renderer.startWidth = 0.1f;
-            renderer.endWidth = 0.1f;
+            renderer.startWidth = thick;
+            renderer.endWidth = thick;
 
             return renderer;
         }

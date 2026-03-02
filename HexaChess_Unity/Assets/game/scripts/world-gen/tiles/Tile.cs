@@ -1,9 +1,8 @@
 
 //#define DEBUG_TILE
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using edocle.tools;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace hexaChess.worldGen
 {
@@ -204,6 +203,8 @@ namespace hexaChess.worldGen
             var edges = Edges;
             var center = WorldPos3D;
             m_TiltDirectionGenerated = true;
+
+            // @todo update tilt here so that it's average of all edges (may need at least 3 cross)
             // Order here is important, so that the tilt is upward and not backward
             Vector3 a = (edges[1] - center);
             Vector3 b = (edges[0] - center);
@@ -345,7 +346,7 @@ namespace hexaChess.worldGen
         {
             int sideSlots = 3;
             float degreesBetweenEachSide = 360f / sideSlots;
-            float sideSlotsDistanceToCenter = m_Radius / sideSlots;
+            float sideSlotsDistanceToCenter = m_Radius;
             Vector2 newDirection = Random.insideUnitCircle.normalized * sideSlotsDistanceToCenter;
             m_SideSlots = new TileSlot[sideSlots];
 
@@ -359,10 +360,23 @@ namespace hexaChess.worldGen
         {
             // Everytime, we update previous direction, si that it can turn
             previousDirection = previousDirection.RotateUsingDegrees(degrees);
-            Vector2 position = m_WorldPos + previousDirection;
-            Vector3 position3D = new Vector3(position.x, m_WorldPosZ, position.y);
+
+            // Vector from center of tile to side slot pos if tile was flat
+            Vector3 slotFlatDirection = new Vector3(previousDirection.x, 0, previousDirection.y);
+
+            // Vector from center taking into account the tilt
+            // point is to "rotate" flat vector
+            // smart way of doing it: cross using "up" to get perpendicular axis,
+            // then use (-)perpendicular axis + tilted "up" direction to get rotated vector
+            Vector3 firstCross = Vector3.Cross(slotFlatDirection, Vector3.up);
+            Vector3 tiltedSlotVector = Vector3.Cross(-firstCross, TiltDirection);
+
+            // Get position using world pos
+            // may need local position AND world position one day, both are here
+            Vector3 position3D = WorldPos3D + tiltedSlotVector;
+
             return new TileSlot(position3D, SlotType.side);
-            // Debug.Log($"New side slot> Direction: {previousDirection} /Position: {position3D}");
+            // Debug.Log($"New side slot> Direction: {tiltedSlotVector} /Position: {position3D}");
         }
 
         #endregion Slots
