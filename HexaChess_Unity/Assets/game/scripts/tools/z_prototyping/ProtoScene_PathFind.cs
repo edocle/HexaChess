@@ -32,6 +32,7 @@ namespace hexaChess.prototyping.pathFind
             // SetupPathFindObjects();
             // SetupSlotObjects();
             SetupTiltObject();
+            SetupTiltTests();
             SetupEdges();
         }
 
@@ -57,6 +58,7 @@ namespace hexaChess.prototyping.pathFind
             ResetDisplayPath();
             ResetDisplaySlots();
             ResetDisplayTilt();
+            ResetDisplayTiltTests();
             ResetEdges();
         }
 
@@ -88,6 +90,7 @@ namespace hexaChess.prototyping.pathFind
             DisplayPath();
             DisplaySlots();
             DisplayTilt();
+            DisplayTiltTests();
             DisplayEdges();
         }
 
@@ -189,13 +192,13 @@ namespace hexaChess.prototyping.pathFind
         {
             m_DisplayTilt = true;
 
-            m_UpLine = GenerateLine("up line", Color.red, Color.yellow, 0.08f);
-            m_TiltLine = GenerateLine("tilt line", Color.purple, Color.yellow, 0.08f);
+            m_UpLine = GenerateLine("up line", Color.blue, Color.blue, 0.02f);
+            m_TiltLine = GenerateLine("tilt line", Color.saddleBrown, Color.saddleBrown, 0.04f);
             // Slots
             m_SlotsLine = new LineRenderer[3];
             for (int i = 0; i < 3; i++)
             {
-                m_SlotsLine[i] = GenerateLine($"slot line {i}", Color.purple, Color.purple, 0.03f);
+                m_SlotsLine[i] = GenerateLine($"slot line {i}", Color.saddleBrown, Color.saddleBrown, 0.02f);
             }
         }
 
@@ -218,29 +221,138 @@ namespace hexaChess.prototyping.pathFind
                 return;
 
             Tile lastTile = LastPath.Last();
+            var center = lastTile.Center;
             // up
             m_UpLine.positionCount = 2;
-            m_UpLine.SetPosition(0, lastTile.WorldPos3D);
-            m_UpLine.SetPosition(1, lastTile.WorldPos3D + Vector3.up);
+            m_UpLine.SetPosition(0, center);
+            m_UpLine.SetPosition(1, center + Vector3.up);
             // tilt
             m_TiltLine.positionCount = 2;
-            m_TiltLine.SetPosition(0, lastTile.WorldPos3D);
-            m_TiltLine.SetPosition(1, lastTile.WorldPos3D + lastTile.TiltDirection);
+            m_TiltLine.SetPosition(0, center);
+            m_TiltLine.SetPosition(1, center + lastTile.TiltDirection);
 
             // slots
             for (int i = 0; i < 3; i++)
             {
                 m_SlotsLine[i].positionCount = 2;
-                m_SlotsLine[i].SetPosition(0, lastTile.WorldPos3D);
+                m_SlotsLine[i].SetPosition(0, center);
                 m_SlotsLine[i].SetPosition(1, lastTile.SideSlots[i].Position);
             }
         }
 
         #endregion display tilt direction
 
+        #region display tilt tests
+
+        LineRenderer[] m_TiltTests_Edges = null;
+        LineRenderer[] m_TiltTests_Tilts = null;
+        bool m_DisplayTiltTests = false;
+
+        void SetupTiltTests()
+        {
+            m_TiltTests_Edges = new LineRenderer[6];
+            m_TiltTests_Tilts = new LineRenderer[3];
+            m_DisplayTiltTests = true;
+
+            // tilt 1
+            m_TiltTests_Edges[0] = GenerateLine("tilt test edge 0", Color.red, Color.red, 0.04f);
+            m_TiltTests_Edges[1] = GenerateLine("tilt test edge 1", Color.red, Color.red, 0.04f);
+            m_TiltTests_Tilts[0] = GenerateLine("tilt test tilt 0", Color.red, Color.red, 0.04f);
+
+            // tilt 2
+            m_TiltTests_Edges[2] = GenerateLine("tilt test edge 2", Color.purple, Color.purple, 0.04f);
+            m_TiltTests_Edges[3] = GenerateLine("tilt test edge 3", Color.purple, Color.purple, 0.04f);
+            m_TiltTests_Tilts[1] = GenerateLine("tilt test tilt 1", Color.purple, Color.purple, 0.04f);
+
+
+            // tilt 3
+            m_TiltTests_Edges[4] = GenerateLine("tilt test edge 4", Color.yellow, Color.yellow, 0.04f);
+            m_TiltTests_Edges[5] = GenerateLine("tilt test edge 5", Color.yellow, Color.yellow, 0.04f);
+            m_TiltTests_Tilts[2] = GenerateLine("tilt test tilt 2", Color.yellow, Color.yellow, 0.04f);
+        }
+
+        void ResetDisplayTiltTests()
+        {
+            if (!m_DisplayTiltTests)
+                return;
+
+            for (int i = 0; i < m_TiltTests_Edges.Length; i++)
+            {
+                ResetLine(m_TiltTests_Edges[i]);
+            }
+            for (int i = 0; i < m_TiltTests_Tilts.Length; i++)
+            {
+                ResetLine(m_TiltTests_Tilts[i]);
+            }
+        }
+
+        void DisplayTiltTests()
+        {
+            if (!m_DisplayTiltTests)
+                return;
+
+            Tile lastTile = LastPath.Last();
+            var edges = lastTile.Edges;
+            var center = lastTile.Center;
+
+            // tilt 1
+            Vector3 a = (edges[1] - center);
+            Vector3 b = (edges[0] - center);
+            var ab = Vector3.Cross(a, b);
+
+            m_TiltTests_Edges[0].positionCount = 2;
+            m_TiltTests_Edges[0].SetPosition(0, center);
+            m_TiltTests_Edges[0].SetPosition(1, center + a);
+
+            m_TiltTests_Edges[1].positionCount = 2;
+            m_TiltTests_Edges[1].SetPosition(0, center);
+            m_TiltTests_Edges[1].SetPosition(1, center + b);
+
+            m_TiltTests_Tilts[0].positionCount = 2;
+            m_TiltTests_Tilts[0].SetPosition(0, center);
+            m_TiltTests_Tilts[0].SetPosition(1, center + ab);
+
+            // tilt 2
+            Vector3 c = (edges[3] - center);
+            Vector3 d = (edges[2] - center);
+            var cd = Vector3.Cross(c, d);
+
+            m_TiltTests_Edges[2].positionCount = 2;
+            m_TiltTests_Edges[2].SetPosition(0, center);
+            m_TiltTests_Edges[2].SetPosition(1, center + c);
+
+            m_TiltTests_Edges[3].positionCount = 2;
+            m_TiltTests_Edges[3].SetPosition(0, center);
+            m_TiltTests_Edges[3].SetPosition(1, center + d);
+
+            m_TiltTests_Tilts[1].positionCount = 2;
+            m_TiltTests_Tilts[1].SetPosition(0, center);
+            m_TiltTests_Tilts[1].SetPosition(1, center + cd);
+
+            // tilt 3
+            Vector3 e = (edges[5] - center);
+            Vector3 f = (edges[4] - center);
+            var ef = Vector3.Cross(e, f);
+
+            m_TiltTests_Edges[4].positionCount = 2;
+            m_TiltTests_Edges[4].SetPosition(0, center);
+            m_TiltTests_Edges[4].SetPosition(1, center + e);
+
+            m_TiltTests_Edges[5].positionCount = 2;
+            m_TiltTests_Edges[5].SetPosition(0, center);
+            m_TiltTests_Edges[5].SetPosition(1, center + f);
+
+            m_TiltTests_Tilts[2].positionCount = 2;
+            m_TiltTests_Tilts[2].SetPosition(0, center);
+            m_TiltTests_Tilts[2].SetPosition(1, center + ef);
+        }
+
+        #endregion display tilt tests
+
         #region display edges
 
         GameObject[] m_EdgeSpheres = null;
+        GameObject m_RealCenter;
         bool m_DisplayEdges = false;
 
         void SetupEdges()
@@ -250,8 +362,9 @@ namespace hexaChess.prototyping.pathFind
 
             for (int i = 0; i < 6; i++)
             {
-                m_EdgeSpheres[i] = GenerateSphere($"edge {i}", 0.1f * i);
+                m_EdgeSpheres[i] = GenerateSphere($"edge {i}", 0.1f);
             }
+            m_RealCenter = GenerateSphere("real center", 0.1f);
         }
 
         void ResetEdges()
@@ -263,6 +376,8 @@ namespace hexaChess.prototyping.pathFind
             {
                 ResetSphere(m_EdgeSpheres[i]);
             }
+
+            ResetSphere(m_RealCenter);
         }
 
         void DisplayEdges()
@@ -276,6 +391,8 @@ namespace hexaChess.prototyping.pathFind
             {
                 m_EdgeSpheres[i].transform.localPosition = edges[i];
             }
+
+            m_RealCenter.transform.localPosition = lastTile.Center;
         }
 
         #endregion display edges

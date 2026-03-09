@@ -2,6 +2,8 @@
 //#define DEBUG_TILE
 using edocle.tools;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace hexaChess.worldGen
@@ -127,6 +129,11 @@ namespace hexaChess.worldGen
             }
         }
 
+        public Vector3 Center
+        {
+            get; private set;
+        }
+
         /// <summary>
         /// Generate position of tile edges
         /// I need them to be specifically named, because I want to know the order and direction of each point
@@ -181,6 +188,13 @@ namespace hexaChess.worldGen
                 (worldPos3D + xNeutral_yBackward.WorldPos3D + xForward_yBackward.WorldPos3D) / 3,
                 (worldPos3D + xForward_yBackward.WorldPos3D + xForward_yNeutral.WorldPos3D) / 3,
             };
+
+            var realCenter = new Vector3();
+            foreach (var edge in m_Edges)
+            {
+                realCenter += edge;
+            }
+            Center = realCenter / m_Edges.Length;
         }
 
         #region Tilt direction
@@ -201,14 +215,22 @@ namespace hexaChess.worldGen
         void GenerateTiltDirection()
         {
             var edges = Edges;
-            var center = WorldPos3D;
+            var center = Center;
             m_TiltDirectionGenerated = true;
 
             // @todo update tilt here so that it's average of all edges (may need at least 3 cross)
             // Order here is important, so that the tilt is upward and not backward
             Vector3 a = (edges[1] - center);
             Vector3 b = (edges[0] - center);
-            m_TiltDirection = Vector3.Cross(a, b);
+            var ab = Vector3.Cross(a, b);
+            Vector3 c = (edges[3] - center);
+            Vector3 d = (edges[2] - center);
+            var cd = Vector3.Cross(c, d);
+            Vector3 e = (edges[5] - center);
+            Vector3 f = (edges[4] - center);
+            var ef = Vector3.Cross(e, f);
+            m_TiltDirection = (ab + cd + ef) / 3f;
+
             m_TiltDirection.Normalize();
         }
 
