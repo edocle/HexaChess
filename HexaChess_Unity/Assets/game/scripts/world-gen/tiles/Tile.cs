@@ -368,7 +368,7 @@ namespace hexaChess.worldGen
         {
             int sideSlots = 3;
             float degreesBetweenEachSide = 360f / sideSlots;
-            float sideSlotsDistanceToCenter = m_Radius;
+            float sideSlotsDistanceToCenter = m_Radius * 0.4f;
             Vector2 newDirection = Random.insideUnitCircle.normalized * sideSlotsDistanceToCenter;
             m_SideSlots = new TileSlot[sideSlots];
 

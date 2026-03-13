@@ -1,4 +1,6 @@
 
+using hexaChess;
+using System.Xml;
 using UnityEngine;
 
 public class TileSlot
@@ -13,6 +15,13 @@ public class TileSlot
     {
         m_Position = position;
         m_slotType = slotType;
+    }
+
+    private WorldEntity m_Worldentity = null;
+    public bool IsEmpty => m_Worldentity == null;
+    public void SetupEntity(WorldEntity worldEntity)
+    {
+        m_Worldentity = worldEntity;
     }
 }
 

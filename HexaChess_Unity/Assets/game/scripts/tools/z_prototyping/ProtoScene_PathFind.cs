@@ -3,10 +3,13 @@ using edocle.tools;
 using hexaChess.tool;
 using hexaChess.worldGen;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace hexaChess.prototyping.pathFind
 {
@@ -34,6 +37,7 @@ namespace hexaChess.prototyping.pathFind
             SetupTiltObject();
             SetupTiltTests();
             SetupEdges();
+            SetupEntities();
         }
 
         #region Island generation setup
@@ -49,8 +53,6 @@ namespace hexaChess.prototyping.pathFind
         {
             m_CurrentUnitTile = m_IslandGenerator.GetTile(0, 0);
             Debug.Log($"> {m_CurrentUnitTile.m_CoordX} {m_CurrentUnitTile.m_CoordY}");
-
-            GenerateUnit();
         }
 
         void OnReliefGenerated()
@@ -63,12 +65,6 @@ namespace hexaChess.prototyping.pathFind
         }
 
         #endregion Island generation setup
-
-        void GenerateUnit()
-        {
-            Debug.Log($"Generate unit");
-            // @todo
-        }
 
         void CallbackRaycastHitObject(RaycastHit hit)
         {
@@ -92,6 +88,7 @@ namespace hexaChess.prototyping.pathFind
             DisplayTilt();
             DisplayTiltTests();
             DisplayEdges();
+            GenerateNewEntity();
         }
 
         #region Display path finding
@@ -443,5 +440,65 @@ namespace hexaChess.prototyping.pathFind
         {
             sphere.transform.localPosition = Vector3.zero;
         }
+
+
+        #region Generate entity
+
+        [Space(8)]
+        [Header("Generate entities")]
+        [SerializeField] GameObject m_EntityContentPrefab = null;
+        [SerializeField] GameObject[] m_EntityPrefabs;
+
+
+        void SetupEntities()
+        {
+            UpdateGeneratedObject(0);
+        }
+
+        GameObject m_CurrentEntityPrefab;
+        public void UpdateGeneratedObject(int index)
+        {
+            m_CurrentEntityPrefab = m_EntityPrefabs[index];
+        }
+
+        bool m_SetupNewEntity = true;
+
+        void GenerateNewEntity(bool bigObject = false, bool tilted = true)
+        {
+            if (!m_SetupNewEntity)
+                return;
+
+            Tile lastTile = LastPath.Last();
+            TileSlot[] sideSlots = lastTile.SideSlots;
+            TileSlot emptySlot = null;
+
+            var test = sideSlots.Where(f => f.IsEmpty).ToList();
+
+            if (test.Count == 0)
+                return;
+
+            if (test.Count == 1)
+                emptySlot = test[0];
+            else
+                emptySlot = test[UnityEngine.Random.Range(0, test.Count)];
+
+            Quaternion quat = !tilted ? Quaternion.identity : Quaternion.FromToRotation(Vector3.up, lastTile.TiltDirection);
+            WorldEntity entity = GenerateEntity(m_CurrentEntityPrefab, emptySlot.Position, quat, tilted);
+
+            emptySlot.SetupEntity(entity);
+        }
+
+        WorldEntity GenerateEntity(GameObject prefab, Vector3 position, Quaternion rotation, bool tilted)
+        {
+            var entityContent = Instantiate(m_EntityContentPrefab, position, rotation);
+            var entity = Instantiate(prefab);
+            entity.transform.parent = entityContent.transform;
+            entity.transform.localPosition = new Vector3();
+            entity.transform.localRotation = Quaternion.identity;
+
+            return entityContent.GetComponent<WorldEntity>();
+        }
+
+        #endregion Generate entity
     }
 }
