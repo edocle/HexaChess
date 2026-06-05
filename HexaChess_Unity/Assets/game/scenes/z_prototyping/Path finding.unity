@@ -1903,6 +1903,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1964397166}
   - component: {fileID: 1964397167}
+  - component: {fileID: 1964397168}
   m_Layer: 0
   m_Name: Camera Container
   m_TagString: Untagged
@@ -1938,7 +1939,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcf68dd9797a4534d8f7fe8a69f93951, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TargetToLookAt: {fileID: 927951811}
+  m_LookAtHandler: {fileID: 1964397168}
   m_Presets:
   - name: top very close
     Position: {x: 0, y: 14, z: -1}
@@ -1964,6 +1965,19 @@ MonoBehaviour:
   m_ActivePreset: 
   m_CameraSmoothMargin: 0.1
   m_SmoothTime: 0.2
+--- !u!114 &1964397168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964397165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b50028e2fca2e0c49ac02eae7cd9bcf3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TargetToLookAt: {fileID: 927951811}
 --- !u!4 &1985205983 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5504067371130908332, guid: c4cdad329cee63d4c9cb691576d757d2, type: 3}
